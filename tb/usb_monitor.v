@@ -1,5 +1,9 @@
 `timescale 1 ns/10 ps  // time-unit/precision
-`define BIT_TIME (1000/12)
+
+// This file is derived from the test bench of the "usb_cdc" project:
+// https://github.com/ulixxe/usb_cdc/tree/main/examples/common/hdl
+// License is MIT:
+// https://github.com/ulixxe/usb_cdc/blob/main/LICENSE
 
 module usb_monitor
   #(parameter MAX_BITS = 128,
@@ -17,7 +21,8 @@ module usb_monitor
    wire       dp_sense;
    wire       dn_sense;
 
-`include "usb_rx_tasks.v"
+  `include "usb_reports.v"
+  `include "usb_rx_tasks.v"
 
    reg [3:0]  pid;
    reg [6:0]  addr;
@@ -38,16 +43,16 @@ module usb_monitor
          packet_rx(pid, addr, endp, frame, data, bytes,
                    `BIT_TIME, 1000000);
          case (pid)
-           PID_OUT : info = "OUT";
-           PID_IN : info = "IN";
-           PID_SOF : info = "SOF";
+           PID_OUT :   info = "OUT";
+           PID_IN :    info = "IN";
+           PID_SOF :   info = "SOF";
            PID_SETUP : info = "SETUP";
            PID_DATA0 : info = "DATA0";
            PID_DATA1 : info = "DATA1";
-           PID_ACK : info = "ACK";
-           PID_NAK : info = "NAK";
+           PID_ACK :   info = "ACK";
+           PID_NAK :   info = "NAK";
            PID_STALL : info = "STALL";
-           default : info = "";
+           default :   info = "";
          endcase
 
       end

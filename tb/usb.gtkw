@@ -1,0 +1,109 @@
+[*]
+[*] GTKWave Analyzer v3.3.89 (w)1999-2018 BSI
+[*] Mon Jun 19 01:06:46 2023
+[*]
+[dumpfile] "/Users/pnr/Dev/fpga_usb_host/tb/tb.fst"
+[dumpfile_mtime] "Mon Jun 19 01:03:36 2023"
+[dumpfile_size] 2031827
+[savefile] "/Users/pnr/Dev/fpga_usb_host/tb/usb.gtkw"
+[timestart] 0
+[size] 1440 847
+[pos] -1 -1
+*-30.000000 8379672 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_soc.
+[treeopen] tb_soc.mon.raw_packet_rx.u_raw_packet_rx_task.
+[treeopen] tb_soc.u_soc.
+[treeopen] tb_soc.u_soc.usb_regs.
+[sst_width] 196
+[signals_width] 278
+[sst_expanded] 1
+[sst_vpaned_height] 414
+@28
+tb_soc.u_soc.clk_pll
+tb_soc.u_soc.rstn
+@820
+tb_soc.mon.info[63:0]
+@28
+tb_soc.usb_p
+tb_soc.usb_n
+tb_soc.u_soc.usb_regs.u_sie.utmi_txready_i
+tb_soc.u_soc.utmi_phy.utmi_txvalid_i
+tb_soc.u_soc.utmi_phy.utmi_rxvalid_o
+tb_soc.u_soc.utmi_phy.utmi_rxactive_o
+@800200
+-SIE
+@22
+tb_soc.u_soc.usb_regs.u_sie.state[3:0]
+@28
+tb_soc.u_soc.usb_regs.u_sie.timeout_o
+tb_soc.u_soc.usb_regs.u_sie.idle_o
+@22
+tb_soc.u_soc.usb_regs.u_sie.response_o[7:0]
+@1000200
+-SIE
+@c00200
+-PHY
+@28
+tb_soc.u_soc.utmi_phy.utmi_reset_assert
+tb_soc.u_soc.utmi_phy.tx_dp
+tb_soc.u_soc.utmi_phy.tx_dn
+tb_soc.u_soc.utmi_phy.rx_mode
+@22
+tb_soc.u_soc.utmi_phy.state[4:0]
+@28
+tb_soc.u_soc.utmi_phy.byte_done
+tb_soc.u_soc.utmi_phy.is_LS
+@22
+tb_soc.u_soc.utmi_phy.utmi_data_out_i[7:0]
+tb_soc.u_soc.utmi_phy.utmi_data_in_o[7:0]
+tb_soc.u_soc.utmi_phy.shiftreg[7:0]
+@28
+tb_soc.u_soc.utmi_phy.rx_timeout
+tb_soc.u_soc.utmi_phy.utmi_rxerror_o
+@1401200
+-PHY
+@800200
+-UART
+@c00022
+tb_soc.u_soc.uart.gpio[31:0]
+@28
+(0)tb_soc.u_soc.uart.gpio[31:0]
+(1)tb_soc.u_soc.uart.gpio[31:0]
+(2)tb_soc.u_soc.uart.gpio[31:0]
+(3)tb_soc.u_soc.uart.gpio[31:0]
+(4)tb_soc.u_soc.uart.gpio[31:0]
+(5)tb_soc.u_soc.uart.gpio[31:0]
+(6)tb_soc.u_soc.uart.gpio[31:0]
+(7)tb_soc.u_soc.uart.gpio[31:0]
+(8)tb_soc.u_soc.uart.gpio[31:0]
+(9)tb_soc.u_soc.uart.gpio[31:0]
+(10)tb_soc.u_soc.uart.gpio[31:0]
+(11)tb_soc.u_soc.uart.gpio[31:0]
+(12)tb_soc.u_soc.uart.gpio[31:0]
+(13)tb_soc.u_soc.uart.gpio[31:0]
+(14)tb_soc.u_soc.uart.gpio[31:0]
+(15)tb_soc.u_soc.uart.gpio[31:0]
+(16)tb_soc.u_soc.uart.gpio[31:0]
+(17)tb_soc.u_soc.uart.gpio[31:0]
+(18)tb_soc.u_soc.uart.gpio[31:0]
+(19)tb_soc.u_soc.uart.gpio[31:0]
+(20)tb_soc.u_soc.uart.gpio[31:0]
+(21)tb_soc.u_soc.uart.gpio[31:0]
+(22)tb_soc.u_soc.uart.gpio[31:0]
+(23)tb_soc.u_soc.uart.gpio[31:0]
+(24)tb_soc.u_soc.uart.gpio[31:0]
+(25)tb_soc.u_soc.uart.gpio[31:0]
+(26)tb_soc.u_soc.uart.gpio[31:0]
+(27)tb_soc.u_soc.uart.gpio[31:0]
+(28)tb_soc.u_soc.uart.gpio[31:0]
+(29)tb_soc.u_soc.uart.gpio[31:0]
+(30)tb_soc.u_soc.uart.gpio[31:0]
+(31)tb_soc.u_soc.uart.gpio[31:0]
+@1401200
+-group_end
+@28
+tb_soc.RX
+@1000200
+-UART
+[pattern_trace] 1
+[pattern_trace] 0

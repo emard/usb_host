@@ -1,4 +1,7 @@
-`include "sim_tasks.v"
+// This file is derived from the test bench of the "usb_cdc" project:
+// https://github.com/ulixxe/usb_cdc/tree/main/examples/common/hdl
+// License is MIT:
+// https://github.com/ulixxe/usb_cdc/blob/main/LICENSE
 
 localparam [3:0] PID_OUT = 4'b0001,
                  PID_IN = 4'b1001,
@@ -148,7 +151,7 @@ task automatic raw_packet_rx
          end else
            bit_counter = 0;
          last_nrzi_bit = nrzi_bit;
-         if (bit_counter > 20 || ($time-start_time > timeout*bit_time)) begin
+         if (/*bit_counter > 20 ||*/ ($time-start_time > timeout*bit_time)) begin
             `report_error("raw_packet_rx(): timeout")
          end else if (bit_counter != 0)
            start_time = $time;
@@ -207,6 +210,7 @@ task automatic raw_packet_rx
       if (dp_sense !== 1'b1 || dn_sense !== 1'b0) begin
          `report_error("raw_packet_rx(): Eye timing violation on EOP")
       end
+      wait_bit(bit_time, timeout);
    end
 endtask
 

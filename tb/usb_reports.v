@@ -1,3 +1,7 @@
+// This file is derived from the test bench of the "usb_cdc" project:
+// https://github.com/ulixxe/usb_cdc/tree/main/examples/common/hdl
+// License is MIT:
+// https://github.com/ulixxe/usb_cdc/blob/main/LICENSE
 
 `define assert_error(msg, signal, value) \
    if ((signal) !== (value)) begin \
