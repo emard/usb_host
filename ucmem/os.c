@@ -10,6 +10,7 @@
  */
 
 typedef unsigned int   uint32_t;
+typedef unsigned char  uint8_t;
 typedef uint32_t       time_t;
 
 void timer_sleep(time_t);
@@ -81,6 +82,8 @@ int is_sim(void)
 
 void timer_sleep(time_t ms)
 {
+    if (is_sim()) return;
+
 	time_t end = uart[2] + ms;
 	while (uart[2] != end) ;
 }
@@ -88,4 +91,13 @@ void timer_sleep(time_t ms)
 time_t timer_now(void)
 {
 	return uart[2];
+}
+
+void* memset(void *dest, uint8_t val, uint32_t len)
+{
+    uint8_t *ptr = dest;
+
+    while (len-- > 0)
+        *ptr++ = val;
+    return dest;
 }
