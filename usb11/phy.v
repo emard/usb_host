@@ -202,7 +202,7 @@ module PHY (
       rx_mode    <= 1'b1;       // line drivers switched off
       saw_sync_J <= 1'b0;       // saw a J in a RX sync pattern
       ones_count <= 3'd1;       // sync pattern ends with a 1 (double K)
-      tx_dp      <= 1'b0;       // TX DP
+      tx_dp      <= 1'b1;       // TX DP
       tx_dn      <= 1'b0;       // TX DN
         end
     else begin
@@ -217,6 +217,7 @@ module PHY (
         saw_sync_J <= 1'b0;
         ones_count <= 3'd1;
         shiftreg   <= SYNC;
+        tx_dp <= 1'b1; tx_dn <= 1'b0;
 
         // switch out into RX or TX task
         if (utmi_reset_assert)

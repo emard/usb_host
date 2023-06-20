@@ -284,9 +284,9 @@ module SIE (
                     rx_done_o   <= !utmi_rxactive_i;
 
                     if (~rx_active) begin
-                      if (send_ack && crc_error) // do not ACK on error
+                      if (send_ack && crc_error) // do not ACK on crc error
                         state <= S_IDLE;
-                      else if (send_ack && (response_o == PID_DATA0 || response_o == PID_DATA1))
+                      else if (send_ack && (send_data1 ? (response_o == PID_DATA1) : response_o == PID_DATA0))
                         state <= S_TX_ACK;
                       else
                         state <= S_IDLE;
