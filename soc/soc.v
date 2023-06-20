@@ -192,6 +192,7 @@ module UART(
   wire uart_r1  = m_sel & (m_addr == 4'h1);
   wire uart_r2  = m_sel & (m_addr == 4'h2);
   wire uart_we  = (uart_r0 & m_wr);
+  wire gpio_we  = (uart_r2 & m_wr);
 
 `ifdef __ICARUS__
   wire is_sim = 1'b1;
@@ -203,6 +204,11 @@ module UART(
                     uart_r1 ? {39'b0, is_sim, rx_full, tx_empty} :
                     uart_r2 ? ms_counter : 32'b0;
 
+  reg [31:0] gpio;
+  always @(posedge clk_i) begin
+    if (gpio_we) gpio <= m_data_i;
+  end
+  
   // UART transmitter
   //
   reg  [ 8:0] tx_shift;

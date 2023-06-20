@@ -168,7 +168,7 @@ endmodule
 
 // local memory size and location
 `define UC_TADDR        4'h1
-`define D_UC_LM_BITS    14 // 2^13 = 8KB
+`define D_UC_LM_BITS    15 // 2^13 = 8KB
 `define D_UC_LM_SIZE    (1<<(`D_UC_LM_BITS))
 
 // Simple RV32I CPU / microcontroller
