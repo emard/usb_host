@@ -273,6 +273,7 @@ void process_dev(DEV *dev)
 
     // still connected?
     if ((usbh[REG_STAT] & STAT_DETECT) == 0) {
+	line_enable(1,0);
         dev = clr_port(0);
         dev->prt_flags = ROOT_PORT|PRT_POWER;
     }

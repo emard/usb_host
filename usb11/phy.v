@@ -53,7 +53,7 @@ module PHY (
                               utmi_dmpulldown_i);
   
   // note DP/DN are swapped in LS mode
-  assign utmi_linestate_o = is_LS ? {line_stat[0], line_stat[1]} : line_stat;
+  assign utmi_linestate_o = { usb_fpga_dn, usb_fpga_dp };
   assign utmi_rxvalid_o   = rx_ready;
   assign utmi_rxerror_o   = rx_error;
   assign utmi_txready_o   = tx_ready;
@@ -63,9 +63,6 @@ module PHY (
   //-----------------------------------------------------------------
   // ULX3S pin interface. See schematics for details
   //-----------------------------------------------------------------
-
-  // Line state matches TX outputs if drivers enabled
-  wire [1:0] line_stat    = rx_mode ? {rx_dn_q, rx_dp_q} : {tx_dn, tx_dp};
 
   // Pull-up / pull-down logic. Host = 10K pulldown
   assign usb_fpga_pu_dp = 1'b0; // utmi_termselect_i;
