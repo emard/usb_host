@@ -1,4 +1,3 @@
-
 // CPU register interface with PHY+SIE. Modelled after the registers of the
 // ultra-embedded usb host example: https://github.com/ultraembedded/core_usb_host
 
@@ -203,7 +202,7 @@ module REGS (
   //-----------------------------------------------------------------
 
   localparam SOF_GUARD_LOW   =    16'd160; // wait past SOF complete
-  localparam SOF_GUARD_HIGH  = 16'd45_000; // 1 ms - one max size transaction - some slack
+  localparam SOF_GUARD_HIGH  = 16'd41_000; // 1 ms - one max size transaction - some slack
   localparam SOF_THRESHOLD   = 16'd47_999; // 1 ms - 1 clock
 
   wire sof_enable   = reg_ctrl[0];
