@@ -1,12 +1,13 @@
 #!/bin/sh
 
 ia entry.s
-ic root.c
+ic task.c
+ic req.c
 ic enum.c
 ic hub.c
 ic hid.c
 ic prn.c
-ic os.c
+ic lib.c
 il -H1 -l -T0x10000000 -c -t -a *.i >test.txt
 il -H1 -l -T0x10000000 -c -t    *.i
 rm *.i

@@ -1,8 +1,8 @@
 TEXT entry(SB),0,$-4
-	MOV	$0x10008000,R2   // 0x10002000
+	MOV	$0x10004000,R2   // 16KB
 	MOV	$setSB(SB),R3
 
-	MOV	$edata(SB),R8	// clear bss area
+	MOV	$edata(SB),R8	 // clear bss area
 	MOV	$end(SB),R5
 	MOV	R0,0(R8)
 	ADD	$4,R8,R8

@@ -1,125 +1,147 @@
 // Enumerate the (newly connected) device
 //
 
-#include "root.h"
+#include "sys.h"
+#include "usb.h"
 
-struct UsbDeviceDescriptor dev_desc;
-uint8_t buffer[256];
-extern int sim;
+DEV_DESC dev_desc;
+uint8_t  buffer[256];
 
 void prn_dev_desc(uint8_t *data);
 void prn_cf_full(uint8_t *data);
 
-void prn_all(DEV *dev)
+void prn_all(TASK *task)
 {
     prn_dev_desc((uint8_t*) &dev_desc);
     prn_cf_full((uint8_t*) buffer);
-    printf("# of NAKs: %x\n", dev->nak);
-    printf("# of TOs:  %x\n", dev->tout); 
+    printf("# of NAKs: %x\n", task->nak);
+    printf("# of TOs:  %x\n", task->tout); 
 }
 
-void set_driver(DEV *dev, uint8_t *data);
+void set_driver(TASK *task, uint8_t *data);
 
 int nxt_addr = 1;
 
 enum enum_state {
-  set_addr, get_dev_desc, get_cfg_desc, set_config, get_full_config, dev_enumerated, dev_stall = 255
+  set_addr, get_dev_desc, get_cfg_desc, set_config, get_full_config, dev_enumerated
 };
 
-int enum_dev(DEV *dev, uint8_t *data)
+void enum_dev(TASK *task, uint8_t *data)
 {
-    struct UsbConfigurationDescriptor *desc_conf = (struct UsbConfigurationDescriptor*)buffer;
+    struct config_desc *desc_conf = (struct config_desc*)buffer;
 
-    if (dev->ep[0]->state != ep_idle) return 1;
-    if (sim) dev->when = timer_now();
-    if (dev->when > timer_now()) return 1;
-
-    switch (dev->dev_state) {
+    switch (task->state) {
     
+    // Enumerate the device:
+    // 1. set address, wait 50ms for device to set it
+    // 2. get device descriptor, set EP0 size
+    // 3. get config descriptor, with size of full config data
+    // 4. set active configuration to 1
+    // 5. fetch the full configuration data and init the right driver
+    //
     case set_addr:
-        do_setup(dev, (SU_OUT|SU_STD|SU_DEV), REQ_SET_ADDRESS, nxt_addr, 0, 0);
-        dev->when = timer_now() + 50;
-        dev->dev_state = get_dev_desc;
-        return 1;
+        task->addr = 0;
+        setup_req(task, (SU_OUT|SU_STD|SU_DEV), SET_ADDRESS, nxt_addr, 0, 0);
+        task->when = now_ms() + 50;
+        task->state = get_dev_desc;
+        return;
         
     case get_dev_desc:
-        if (dev->ep[0]->resp != PID_DATA1) break;
-        dev->dev_addr = nxt_addr++;
+        if (task->req->resp != REQ_OK) break;
+        task->addr = nxt_addr++;
         printf("SET ADDR ok\n");
-        
-        do_setup(dev, (SU_IN|SU_STD|SU_DEV), REQ_GET_DESCRIPTOR, DEV_DESC, 0, sizeof(dev_desc));
-        dev->setup.pData = (uint8_t *) &dev_desc;
-        dev->dev_state = get_cfg_desc;
-        return 1;
+
+        setup_req(task, (SU_IN|SU_STD|SU_DEV), GET_DESC, DEV_ID<<8, 0, sizeof(DEV_DESC));
+        task->setup.pData = (uint8_t *) &dev_desc;
+        task->state = get_cfg_desc;
+        return;
     
     case get_cfg_desc:
-        if (dev->ep[0]->resp != PID_ACK) break;
-        printf("GET DEV DESC ok\n");
+        if (task->req->resp != REQ_OK) break;
+        printf("GET TASK DESC ok\n");
         
-        do_setup(dev, (SU_IN|SU_STD|SU_DEV), REQ_GET_DESCRIPTOR, CONF_DESC, 0, sizeof(*desc_conf));
-        dev->setup.pData = buffer;
-        dev->dev_state = set_config;
-        return 1;
+        setup_req(task, (SU_IN|SU_STD|SU_DEV), GET_DESC, CNF_ID<<8, 0, sizeof(CNF_DESC));
+        task->setup.pData = buffer;
+        task->state = set_config;
+        return;
 
     case set_config:
-        if (dev->ep[0]->resp != PID_ACK) break;
-        printf("GET CONF DESC ok, size = %x\n", ((struct UsbConfigurationDescriptor*)buffer)->wTotalLength);
+        if (task->req->resp != REQ_OK) break;
+        printf("GET CONF DESC ok, size = %d\n", ((struct config_desc*)buffer)->wTotalLength);
         
-        do_setup(dev, (SU_OUT|SU_STD|SU_DEV), REQ_SET_CONFIGURATION, desc_conf->bConfigurationValue, 0, 0);
-        dev->when = timer_now() + 10;
-        dev->dev_state = get_full_config;
-        return 1;
+        setup_req(task, (SU_OUT|SU_STD|SU_DEV), SET_CONF, 1, 0, 0);
+        task->when = now_ms() + 10; // [needed ?]
+        task->state = get_full_config;
+        return;
 
     case get_full_config:
-        if (dev->ep[0]->resp != PID_DATA1) break;
+        if (task->req->resp != REQ_OK) break;
         printf("SET CONFIG ok\n");
+
         if (desc_conf->wTotalLength > sizeof(buffer)) {
             printf("configuration too large\n");
-            dev->dev_state = dev_stall;
-            return 0;
+            task->state = dev_stall;
+            return;
         }
-        do_setup(dev, (SU_IN|SU_STD|SU_DEV), REQ_GET_DESCRIPTOR, CONF_DESC, 0, desc_conf->wTotalLength);
-        dev->setup.pData = buffer;
-        dev->dev_state = dev_enumerated;
-        return 1;
+        setup_req(task, (SU_IN|SU_STD|SU_DEV), GET_DESC, CNF_ID<<8, 0, desc_conf->wTotalLength);
+        task->setup.pData = buffer;
+        task->state = dev_enumerated;
+        return;
 
     case dev_enumerated:
-        if (dev->ep[0]->resp != PID_ACK) break;
+        if (task->req->resp != REQ_OK) break;
         printf("GET CONF FULL ok\n");
-        prn_all(dev);
-        set_driver(dev, buffer);
-        (*dev->driver)(dev, buffer);
-        return 1;
+        prn_all(task);
+        set_driver(task, buffer);
+        task->state = dev_init;
+        (*task->driver)(task, buffer);
+        return;
+        
+    case dev_stall:
+        task->when = now_ms() + 255;
+        return;
     }
-    printf("Enumeration step failed (%x)\n", dev->ep[0]->resp);
-    dev->dev_state = dev_stall;
-    return 0;
+    printf("Enumeration %x step failed (%x)\n", task->state, task->req->resp);
+    task->state = dev_stall;
+    return;
 }
 
-int drv_unkown(DEV *dev, uint8_t *data)
+uint8_t *config_end;
+
+// Find a descriptor in the configuration data starting at 'data'
+//
+void  *find_desc(void *data, uint8_t id)
+{
+    ANY_DESC *dsc = data;
+    
+    while (data < config_end && dsc->bDescriptorType != id) {
+        data = (uint8_t *)data + dsc->bLength;
+        dsc  = data;
+    }
+    if (data == config_end) {
+        return NULL;
+    }
+    return data;
+}
+
+void drv_unkown(TASK *task, uint8_t *data)
 {
     //printf("Unkown device, port stalled\n");
-    return 1;
+    return;
 }
 
-void set_driver(DEV *dev, uint8_t *data)
+void set_driver(TASK *task, uint8_t *data)
 {
-    struct UsbConfigurationDescriptor *desc = (struct UsbConfigurationDescriptor *)data;
-    uint8_t *end = data + desc->wTotalLength;
-    struct UsbDescriptorHeader *hdr = (struct UsbDescriptorHeader *)data;
-    struct UsbInterfaceDescriptor *iface;
-    
-    while (data < end && hdr->bDescriptorType != 4) {
-        data += hdr->bLength;
-        hdr = (struct UsbDescriptorHeader *)data;
-    }
-    iface = (struct UsbInterfaceDescriptor *)data;
+    CNF_DESC *conf = (struct config_desc *)data;
+    IFC_DESC *iface;
+
+    // set the driver based on the first interface found
+    // to-do: itterate through all interaces
+    config_end = data + conf->wTotalLength;
+    iface = find_desc(data, IFC_ID);
     switch (iface->bInterfaceClass) {
-    case 3:  dev->driver = drv_hid;     break;
-    case 9:  dev->driver = drv_hub;     break;
-    default: dev->driver = drv_unkown;
+    case 3:  task->driver = drv_hid;     break;
+    case 9:  task->driver = drv_hub;     break;
+    default: task->driver = drv_unkown;
     }
-    dev->dev_state = 0;
 }
-
-

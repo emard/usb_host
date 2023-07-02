@@ -1,8 +1,11 @@
-#include "root.h"
+#include "sys.h"
+#include "usb.h"
+
+#ifndef NOPRINT
 
 void prn_dev_desc(uint8_t *data)
 {
-    struct UsbDeviceDescriptor *desc = (struct UsbDeviceDescriptor *)data;
+    struct dev_desc *desc = (struct dev_desc *)data;
     
     printf("Device VID=%x PID=%x:\n",   desc->idVendor, desc->idProduct);
     printf("  bcdUSB=%x\n",             desc->bcdUSB);
@@ -11,33 +14,33 @@ void prn_dev_desc(uint8_t *data)
     printf("  bDeviceProtocol=%x\n",    desc->bDeviceProtocol);
     printf("  bMaxPacketSize0=%d\n",    desc->bMaxPacketSize0);
     printf("  bcdDevice=%x\n",          desc->bcdDevice);
-    printf("  bNumConfigurations=%x\n", desc->bNumConfigurations);
+    printf("  bNumConfigurations=%d\n", desc->bNumConfigurations);
 }
 
 void prn_cf_desc(uint8_t *data)
 {
-    struct UsbConfigurationDescriptor *desc = (struct UsbConfigurationDescriptor *)data;
+    struct config_desc *desc = (struct config_desc *)data;
     
     printf("CONFIGURATION:\n");
     //printf("  bLength=%x\n",             desc->bLength);
     //printf("  bDescriptorType=%x\n",     desc->bDescriptorType);
-    printf("  wTotalLength=%x\n",        desc->wTotalLength);
-    printf("  bNumInterfaces=%x\n",      desc->bNumInterfaces);
-    printf("  bConfigurationValue=%x\n", desc->bConfigurationValue);
+    printf("  wTotalLength=%d\n",        desc->wTotalLength);
+    printf("  bNumInterfaces=%d\n",      desc->bNumInterfaces);
+    printf("  bConfigurationValue=%d\n", desc->bConfigurationValue);
     //printf("  iConfiguration=%x\n",      desc->iConfiguration);
     printf("  bmAttributes=%x\n",        desc->bmAttributes);
-    printf("  bMaxPower=%x\n",           desc->bMaxPower);
+    printf("  bMaxPower=%d\n",           desc->bMaxPower);
 }
 
 void prn_if_desc(uint8_t *data)
 {
-    struct UsbInterfaceDescriptor *desc = (struct UsbInterfaceDescriptor *)data;
+    struct iface_desc *desc = (struct iface_desc *)data;
     printf("INTERFACE:\n");
     //printf("  bLength=%x\n",             desc->bLength);
     //printf("  bDescriptorType=%x\n",     desc->bDescriptorType);
-    printf("  bInterfaceNumber=%x\n",    desc->bInterfaceNumber);
-    printf("  bAlternateSetting=%x\n",   desc->bAlternateSetting);
-    printf("  bNumEndpoints=%x\n",       desc->bNumEndpoints);
+    printf("  bInterfaceNumber=%d\n",    desc->bInterfaceNumber);
+    printf("  bAlternateSetting=%d\n",   desc->bAlternateSetting);
+    printf("  bNumEndpoints=%d\n",       desc->bNumEndpoints);
     printf("  bInterfaceClass=%x\n",     desc->bInterfaceClass);
     printf("  bInterfaceSubClass=%x\n",  desc->bInterfaceSubClass);
     printf("  bInterfaceProtocol=%x\n",  desc->bInterfaceProtocol);
@@ -46,29 +49,29 @@ void prn_if_desc(uint8_t *data)
 
 void prn_ep_desc(uint8_t *data)
 {
-    struct UsbEndpointDescriptor *desc = (struct UsbEndpointDescriptor *)data;
+    struct ep_desc *desc = (struct ep_desc *)data;
 
     printf("ENDPOINT:\n");
     //printf("  bLength=%x\n",             desc->bLength);
     //printf("  bDescriptorType=%x\n",     desc->bDescriptorType);
     printf("  bEndpointAddress=%x\n",    desc->bEndpointAddress);
     printf("  bmAttributes=%x\n",        desc->bmAttributes);
-    printf("  wMaxPacketSize=%x\n",      desc->wMaxPacketSize);
-    printf("  bInterval=%x\n",           desc->bInterval);
+    printf("  wMaxPacketSize=%d\n",      desc->wMaxPacketSize);
+    printf("  bInterval=%d\n",           desc->bInterval);
 }
 
 void prn_unknown_desc(uint8_t *data)
 {
-    struct UsbDescriptorHeader *desc = (struct UsbDescriptorHeader *)data;
+    ANY_DESC *desc = (ANY_DESC *)data;
     printf("UNKOWN DESCRIPTOR:\n");
-    printf("  bLength=%x\n",             desc->bLength);
+    printf("  bLength=%d\n",             desc->bLength);
     printf("  bDescriptorType=%x\n",     desc->bDescriptorType);
 }
 
 void prn_cf_full(uint8_t *data)
 {
-    struct UsbConfigurationDescriptor *desc = (struct UsbConfigurationDescriptor *)data;
-    struct UsbDescriptorHeader *hdr = (struct UsbDescriptorHeader *)data;
+    CNF_DESC *desc = (CNF_DESC *)data;
+    ANY_DESC *hdr  = (ANY_DESC *)data;
     uint8_t *end = data + desc->wTotalLength;
     
     do {
@@ -80,6 +83,13 @@ void prn_cf_full(uint8_t *data)
         default: prn_unknown_desc(data);
         }
         data += hdr->bLength;
-        hdr = (struct UsbDescriptorHeader *)data;
+        hdr = (ANY_DESC *)data;
     } while (data < end);
 }
+
+#else
+
+void prn_dev_desc(uint8_t *data) {}
+void prn_cf_full(uint8_t *data) {}
+
+#endif

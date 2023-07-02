@@ -2,127 +2,130 @@
 //
 //
 
-#include "root.h"
+#include "sys.h"
+#include "usb.h"
 
-extern int sim;
-extern EP  endpoints[];
-
-#define IF_DESC      0x04
 #define KBD          0x01
 #define MSE          0x02
 
-// Assume that the first Interface descriptor will contain a boot protocol
-// mouse or keyboard device.
-//
-int find_protocol(uint8_t *data)
-{
-    struct UsbConfigurationDescriptor *desc = (struct UsbConfigurationDescriptor *)data;
-    uint8_t *end = data + desc->wTotalLength;
-    struct UsbDescriptorHeader *hdr = (struct UsbDescriptorHeader *)data;
-    struct UsbInterfaceDescriptor *iface;
-    
-    while (data < end && hdr->bDescriptorType != IF_DESC) {
-        data += hdr->bLength;
-        hdr = (struct UsbDescriptorHeader *)data;
-    }
-    iface = (struct UsbInterfaceDescriptor *)data;
-    if ((data == end) || (iface->bInterfaceSubClass != 1))
-        return 0;
-    return iface->bInterfaceProtocol;
-}
-
 enum hid_state {
-    get_hid_desc, hid_mouse1, hid_mouse2, hid_keybd1, hid_keybd2, hid_idle, dev_stall = 255
+    hid_init, hid_mouse1, hid_mouse2, hid_keybd1, hid_keybd2, hid_idle
 };
 
-uint8_t msepkt[4];
-uint8_t kbdpkt[8];
+struct hid_data {
+    uint8_t flags;
+    uint8_t ms_ep;
+    uint8_t ms_toggle;
+    uint8_t ms_pkt[4];
+    uint8_t kbd_ep;
+    uint8_t kbd_toggle;
+    uint8_t kbd_pkt[8];
+};
+
+#define local ((struct hid_data *)task->data)
 
 // Driver for HID keyboard and mouse
 //
-int drv_hid(DEV *dev, uint8_t *data)
+void drv_hid(TASK *task, uint8_t *config)
 {
-    int i, proto;
-    EP  *ep;
-
-    if (dev->ep[1] && (dev->ep[1]->state != ep_idle)) return; // note: EP 1 !
-    if (sim) dev->when = timer_now();
-    if (dev->when > timer_now()) return;
+    REQ  *req;
+    IFC_DESC *iface;
+    EPT_DESC *ept;
     
-    switch (dev->dev_state) {
+    switch (task->state) {
     
-    // Read configuration data, first interface must be
-    // a boot keyboard or boot mouse.
+    // Read configuration data, find interfaces for
+    // a boot keyboard (3,1,1) and/or a boot mouse (3,1,2).
     //
-    case get_hid_desc:
+    case hid_init:
         printf("HID connected\n");
-        proto = find_protocol(data);
-        dev->ep[1] = ep = &endpoints[(proto == MSE) ? 5 : 6];
-        ep->dev = dev;
-        ep->maxsz = 8;
-        ep->idx = 1;
-        ep->toggle = 0;
-        switch (proto) {
-        case KBD:   printf("std keyboard detected\n");
-                    dev->dev_state = hid_keybd1;
-                    break;
+        
+        task->data = malloc(sizeof(struct hid_data));
+        while (1) {
+            if ((iface = find_desc(config, IFC_ID)) == NULL)
+                break;
+            config = (uint8_t *)iface + iface->bLength;
 
-        case MSE:   printf("std mouse detected\n");
-                    dev->dev_state = hid_mouse1;
-                    break;
+            if (iface->bInterfaceClass == 3 && iface->bInterfaceSubClass == 1) {
+                switch (iface->bInterfaceProtocol) {
+                case KBD:   task->state   = hid_keybd1;
+                            local->flags |= KBD;
+                            ept = find_desc(config, EPT_ID);
+                            local->kbd_ep  = ept->bEndpointAddress & 0x0f;
+                            printf("std keyboard detected (%d)\n", local->kbd_ep);
+                            break;
 
-        default:    printf("HID device not recognised\n");
+                case MSE:   task->state   = hid_mouse1;
+                            local->flags |= MSE;
+                            ept = find_desc(config, EPT_ID);
+                            local->ms_ep  = ept->bEndpointAddress & 0x0f;
+                            printf("std mouse detected (%d)\n", local->ms_ep);
+                            break;
+
+                default:    printf("HID boot device not recognised\n");
+                            continue;
+                }
+            }
         }
-        return 1;
+        if (local->flags == 0) {
+            printf("No boot HID device found\n");
+            task->state = hid_idle;
+        }
+        return;
     
+    // Read the keyboard and/or mouse data, alternating between the two
+    // for combined devices (e.g. keyboard with a trackpad)
+    //
     case hid_mouse1:
-        do_data(dev, 1, IN, msepkt, 4);
-        dev->dev_state = hid_mouse2;
-        return 1;
+        data_req(task, local->ms_ep, IN, local->ms_pkt, 4);
+        task->req->toggle =local->ms_toggle;
+        task->state = hid_mouse2;
+        return;
         
     case hid_mouse2:
-        if (dev->ep[1]->resp == PID_STALL) {
+        if (task->req->resp == PID_STALL) {
             printf("stalled\n");
-            dev->dev_state = hid_idle;
-            return 1;
+            task->state = hid_idle;
+            return;
         }
-        dev->dev_state = hid_mouse1;
-        dev->when = timer_now() + 10;
-        if (dev->ep[1]->resp != USB_RES_ERR) {
+        task->state = (local->flags & KBD) ? hid_keybd1 : hid_mouse1;
+        task->when = now_ms() + 10;
+        if (task->req->resp == REQ_OK) {
+            local->ms_toggle = task->req->toggle;
             printf("MOUSE: ");
-            for(i=0; i<4; i++) printf("%x ", msepkt[i]);
+            for(int i=0; i<4; i++) printf("%x ", local->ms_pkt[i]);
             printf("\n");
         }
-        return 1;
+        return;
     
     case hid_keybd1:
-        do_data(dev, 1, IN, kbdpkt, 8);
-        dev->dev_state = hid_keybd2;
-        return 1;
+        data_req(task, local->kbd_ep, IN, local->kbd_pkt, 8);
+        task->req->toggle =local->kbd_toggle;
+        task->state = hid_keybd2;
+        return;
         
     case hid_keybd2:
-        if (dev->ep[1]->resp == PID_STALL) {
+        if (task->req->resp == PID_STALL) {
             printf("stalled\n");
-            dev->dev_state = hid_idle;
-            return 1;
+            task->state = hid_idle;
+            return;
         }
-        dev->dev_state = hid_keybd1;
-        dev->when = timer_now() + 10;
-        if (dev->ep[1]->resp != USB_RES_ERR) {
+        task->state = (local->flags & MSE) ? hid_mouse1 : hid_keybd1;
+        task->when = now_ms() + 10;
+        if (task->req->resp == REQ_OK) {
+            local->kbd_toggle = task->req->toggle;
             printf("KEYBD: ");
-            for(i=0; i<8; i++) printf("%x ", kbdpkt[i]);
+            for(int i=0; i<8; i++) printf("%x ", local->kbd_pkt[i]);
             printf("\n");
         }
-        return 1;
+        return;
 
     case hid_idle:
-        dev->when = timer_now() + 255;
-        return 1;
+        task->when = now_ms() + 255;
+        return;
 
     }
-    printf("HID driver step failed (%x, %x)\n", dev->dev_state, dev->ep[0]->resp);
-    dev->dev_state = dev_stall;
-    return 0;
+    printf("HID driver step failed (%x, %x)\n", task->state, task->req->resp);
+    task->state = dev_stall;
+    return;
 }
-
-

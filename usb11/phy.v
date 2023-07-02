@@ -53,7 +53,7 @@ module PHY (
                               utmi_dmpulldown_i);
   
   // note DP/DN are swapped in LS mode
-  assign utmi_linestate_o = { usb_fpga_dn, usb_fpga_dp };
+  assign utmi_linestate_o = {usb_fpga_dn, usb_fpga_dp};
   assign utmi_rxvalid_o   = rx_ready;
   assign utmi_rxerror_o   = rx_error;
   assign utmi_txready_o   = tx_ready;
@@ -201,7 +201,7 @@ module PHY (
       ones_count <= 3'd1;       // sync pattern ends with a 1 (double K)
       tx_dp      <= 1'b1;       // TX DP
       tx_dn      <= 1'b0;       // TX DN
-        end
+      end
     else begin
       tx_ready <= 1'b0;
       rx_ready <= 1'b0;
