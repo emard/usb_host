@@ -1,4 +1,3 @@
-
 // Build requests out of single transactions.
 //
 
@@ -88,7 +87,7 @@ static int in_txn(REQ *req, int want_hs)
     // fetch IN buf, check for buffer overflow
     req->size = usbh[REG_RXSTS] & 0xffff;
     if (req->size > req->len)
-        return REQ_ERR;
+        req->size = req->len;
     for (i=0; i < req->size; i++) {
         *rx++ = usbh[REG_DATA];
     }
