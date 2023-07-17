@@ -38,7 +38,8 @@ As USB is implicitly a shared bus, only one packet can be in transit in any one 
 
 In order to keep the receive clock PLL sufficiently synchronised, the wire pattern must have sufficient transitions. This is achieved by inserting an additional '0' bit on the data stream after every six '1' bits (which have no transitions). The spec gives the following algorithm (section 7.1.9):
 
-<p align="center"><img src="bitstuff.png"></p>
+<p align="center">
+![a](doc/img/bitstuff.png)
 
 For receiving, "insert zero bit" obviously becomes "remove zero bit".
 
