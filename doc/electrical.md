@@ -25,8 +25,8 @@ As mentioned, the four signals are SE0, J, K and SE1:
 | DP  | DN  | Name    | Usage |
 | --- | --- | ---     |:--- |
 |  0  |  0  | SE0     | Unconnected, Reset, End-Of-Packet |
-|  0  |  1  | J, Idle | Logical 1, Connected Idle |
-|  1  |  0  | K       | Logical 0 |
+|  0  |  1  | K       | Logical 0 |
+|  1  |  0  | J, Idle | Logical 1, Connected Idle |
 |  1  |  1  | SE1     | Illegal |
 
 As long as no device is connected, both D+ and D- are pulled down at the host (or 'upstream' port) and the controller recognises this as the unconnected state.
