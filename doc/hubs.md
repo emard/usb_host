@@ -29,7 +29,7 @@ See section 11.13 of the Spec for more detail.
 
 After enumeration the host should retrieve the hub descriptor:
 
-```C
+```c
 struct {
   uint8_t  bLength;
   uint8_t  bDescriptorType;
@@ -55,7 +55,7 @@ See section 11.15 of the Spec for more detail.
 
 Below is C pseudo-code to manage the downstream ports of a hub with a simplistic algorithm:
 
-```C
+```c
 // Space for downstream port tasks
 TASK porttask[MAXPORT];
 
