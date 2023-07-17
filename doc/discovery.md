@@ -95,7 +95,7 @@ For more information on each class, please refer to the standards document for e
 
 The first level of information about the device is in the device descriptor (section 9.6.1):
 
-```C
+```c
 struct
 {
   uint8_t  bLength;              // 18 bytes
@@ -128,7 +128,7 @@ For a large host (e.g. the USB host software in a desktop OS) it is possible to 
 
 The second level of information about the device is in the configuration descriptor. This is a (potentially large) hierarchical set of descriptors that describe the device's function(s). It begins with a configuration header (section 9.6.2):
 
-```C
+```c
 struct
 {
   uint8_t  bLength;              // 9 bytes
@@ -149,6 +149,3 @@ The key fields in this structure are:
 * `bNumInterfaces`: the number of "interfaces" in the configuration. Interfaces are the top level of the sub-descriptors.
 
 The configuration descriptor header is followed by a numbered set of interface sub-descriptors that describe the device function(s). There is at minimum one interface descriptor. Interfaces are further described [on this page](interfaces.md).
-
-
-
