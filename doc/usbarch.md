@@ -7,7 +7,7 @@ As the name Universal Serial Bus implies, USB uses a bus architecture, i.e. all 
 It is however designed as tiered, segmented bus: the devices are not all daisy chained together, but instead connected via hubs. Every bus segment ("USB cable") is managed individually for power and speed. The specification puts the maximum number of tiers at 6, in order to put a cap on timing delays in the system.
 
 <p align="center">
-![](img/segmbus.png)
+![](./img/segmbus.png)
 
 Note that it is possible to connect a device directly to the root port and use just a single tier.
 
