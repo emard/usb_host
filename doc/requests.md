@@ -65,7 +65,7 @@ The 'error' condition means that the device (belatedly, or based on the data rec
 Control requests ("Control Read Transfers" and "Control Write Transfers" in the spec) are more complex than the other requests, because they consist of three distinct phases: a setup phase, an optional data phase and a final status phase:
 
 <p align="center">
-![a](doc/img/img/control.png)
+![a](doc/img/control.png)
 
 _SETUP phase_
 
@@ -103,5 +103,3 @@ The third and final phase is the status phase. This phase consists of a single I
 For Control Reads, the host sends a zero-length OUT transaction. The device response to this data packet indicates the current status. A NAK indicates that the device is still processing the command and that the host should retry the status stage. An ACK indicates that the device has completed the command and is ready to accept a new command. A STALL indicates that the device has an error that prevents it from completing the command.
 
 For Control Writes, the host sends a zero-length IN transaction. The device responds with either a handshake or a zero-length data packet to indicate its current status. A NAK indicates that the device is still processing the command and that the host should retry the status stage; a STALL indicates that the device cannot complete the command; and return of a zero-length packet indicates normal completion of the command. The device expects the host to respond to this data packet with ACK. If the device does not receive ACK, it remains in the status stage of the command. Receipt of a new SETUP transaction clears this state.
-
-
