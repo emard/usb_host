@@ -25,7 +25,7 @@ A keep-alive signal is two LS bit-times of `SEO`, followed by one bit-time of `J
 
 Frames are created by the Host Controller through issuing Start-of-Frame (SOF) tokens at 1 ms intervals:
 
-![](img/frame.png)
+![a](doc/img/frame.png)
 
 The SOF token is the first transmission in the frame period. After issuing a SOF token, the Host Controller is free to transmit other transactions for the remainder of the frame period. When the Host Controller is in its normal operating state, SOF tokens must be continuously generated at the 1ms periodic rate, regardless of the other bus activity or lack thereof.
 

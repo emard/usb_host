@@ -40,7 +40,7 @@ The USB11 transceiver is constructed out of 5 modules: the physical interface or
 
 The PHY module converts between bus signals and packets. The SIE module combines packets into complete transactions, consisting of a token packet, a data packet and optionally a handshake packet. The FIFOs are intermediate storage between the Host CPU and the bus. The CTRL unit manages USB frames and interaction with the Host CPU.
 
-![](img/usb11.png)
+![a](doc/img/usb11.png)
 
 It uses a classical synchronous CPU interface with select, read and write signals, for easy connection with simple systems. For use in larger designs some form of AXI wrapper may be useful.
 
@@ -80,7 +80,7 @@ The Host controller consists of a tiny Risc-V (RV32I) core combined with 16KB of
 
 Together with an UART and a USB11 transceiver it has been combined into a small system-on-a-chip for testing and evaluation purposes:
 
-![](img/soc.png)
+![a](doc/img/soc.png)
 
 The example software recognises hubs, keyboards and mice. The total number of ports in the system must be less than 15. Multiple levels of hub can be used, as long as this maximum is not exceeded.
 

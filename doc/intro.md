@@ -18,7 +18,7 @@ The main purpose of this project is to give FPGA-based projects access to USB de
 
 The code has been verified using the ULX3S FPGA board. This is a popular development board based around a Lattice ECP5 series FPGA.
 
-![](https://radiona.org/ulx3s/assets/img/legend.png)
+![a](doc/https://radiona.org/ulx3s/assets/img/legend.png)
 
 The USB2 port is connected directly (via a few resistors and diodes) to the FPGA. This circuit is easy to replicate on other boards using a [PMOD](https://www.crowdsupply.com/radiona/ulx3s/updates/introducing-the-ulx3s-pmod-set)
 

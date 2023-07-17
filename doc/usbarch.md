@@ -36,7 +36,7 @@ Each transfer begins when the host sends a packet describing the type and direct
 Each device has an unique address between 1 and 127. When first connected, a device has address 0, but as part of the connection protocol it gets assigned its unique address by the host. Endpoints are a core concept of the USB architecture. They are best understood as small FIFO hardware buffers in a device (and at least  historically, they were):
 
 <p align="center">
-![](img/addrendp.png)
+![a](doc/img/addrendp.png)
 
 The device that is addressed by the token packet selects itself by decoding the address field. In a given transfer, data is transferred either from the host to a device endpoint or from a device endpoint to the host. The direction of data transfer is specified in the token packet.
 

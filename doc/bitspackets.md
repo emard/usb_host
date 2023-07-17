@@ -16,13 +16,13 @@ USB uses NRZI encoding of the bit stream. This means that if the current data bi
 
 This is illustrated in the below figure (from spec section 7.1.8):
 
-![](img/nrzi.png)
+![a](doc/img/nrzi.png)
 
 #### Packets
 
 All traffic on the bus is composed from **packets**. A packet consists of a SYNC pattern, a set of data bits and an EOP (End-Of-Packet) pattern.
 
-![](img/packet.png)
+![a](doc/img/packet.png)
 
 The SYNC pattern is `KJKJKJKK`. This pattern has a lot of edges to synchronise the receiver PLL clock and the `KK` indicates the start of the data payload. The first edge of the SYNC pattern is considered to be the start of the packet ("SOP").
 
@@ -58,7 +58,7 @@ As an exception to the above rule, a hub will not forward full speed traffic for
 
 The solution to the above issue is a special packet identifier byte, `PRE` (= 0x3c) that alerts the hub to an outboud low-speed package that needs repeating to low-speed ports:
 
-![](img/pre_mode.png)
+![a](doc/img/pre_mode.png)
 
 When it wants to send a LS packet via a hub, the host first sends a full-speed sync pattern, followed by the PRE / 0x3c byte, also sent at full-speed. Then it pauses for 4 FS bit times to give the hub time to enable its low speed repeaters. Then it sends the low-speed packet. Once the hub sees the (LS) EOP pattern, it disables the low-speed repeater again. The PRE-preamble must be repeated before each and every outbound packet.
 
@@ -71,7 +71,7 @@ A last oddity about talking to LS devices behind a hub is signal polarity: altho
 
 This is very counter-intuitive at first, but actually easy to understand when viewed in terms of wire swapping (see the [Signal Polarity](electrical.md) section):
 
-![](img/pre_polarity.png)
+![a](doc/img/pre_polarity.png)
 
 The hub has already swapped the wires at its downstream port and hence the host sees the low-speed traffic with normal polarity.
 

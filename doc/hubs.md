@@ -15,7 +15,7 @@ Hubs are a core part of the USB specification and the only device class that is 
 This is summarised in the below graphic:
 
 <p align="center">
-![](img/hubstruct.png)
+![a](doc/img/hubstruct.png)
 
 The hub controller manages the downstream ports, e.g. switching power on and off, enabling or disabling the port, sending a reset signal, etc. The host controller takes these actions based on commands received from the host.
 

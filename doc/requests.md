@@ -65,7 +65,7 @@ The 'error' condition means that the device (belatedly, or based on the data rec
 Control requests ("Control Read Transfers" and "Control Write Transfers" in the spec) are more complex than the other requests, because they consist of three distinct phases: a setup phase, an optional data phase and a final status phase:
 
 <p align="center">
-![](img/img/control.png)
+![a](doc/img/img/control.png)
 
 _SETUP phase_
 

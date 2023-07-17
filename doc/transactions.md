@@ -33,7 +33,7 @@ The simplest transactions are datagram transactions. They consist of two packets
 
 There is no handshake in either direction: if a transaction is garbled in transmission, it is lost.
 
-![](img/iso_txn.png)
+![a](doc/img/iso_txn.png)
 
 Datagram transactions are typically used to transmit audio data. Transmitting a 64 byte datagram packet each frame results in an effective bitrate of 512kbps, easily enough for an MP3-encoded audio track.
 
@@ -48,7 +48,7 @@ The token itself does not define the stream nature of the transaction: it is the
 
 Stream transactions are more complex and best discussed for the IN and OUT directions seperately. First let's look at stream OUT transactions.
 
-![](img/out_txn.png)
+![a](doc/img/out_txn.png)
 
 The host initiates the transaction by sending an OUT token, immediatley followed by a DATA packet. This can be a DATA0 or DATA1 packet, depending on the current transmission sequence number.
 
@@ -63,7 +63,7 @@ The device can then respond with a handshake or with a timeout. The choice is ma
 
 Stream IN transactions are mostly similar, but look a bit more complex, as both sides can send a handshake:
 
-![](img/in_txn.png)
+![a](doc/img/in_txn.png)
 
 The host initiates the transaction by sending an IN token. It then waits for the device response, which can be a DATA packet, a handshake or a timeout:
 
@@ -95,7 +95,7 @@ SETUP transactions (maybe better named "command transactions") are the first tra
 
 SETUP transactions consist of three packets: a token packet, a data packet and a handshake packet:
 
-![](img/setup_txn.png)
+![a](doc/img/setup_txn.png)
 
 A setup transaction is very similar to a stream OUT transaction. The host starts by sending a SETUP token packet. The endpoint is always endpoint `0`, which is the obligatory control endpoint.
 
