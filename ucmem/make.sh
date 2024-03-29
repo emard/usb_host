@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# cd ../../
+# git clone https://gitlab.com/pnru/riscv-kencc
+# cd riscv-kencc
+# ./CONFIG.sh
+# ./BUILD.sh
+# PATH=$PATH:../../riscv-kencc/host/bin/
+
 ia entry.s
 ic task.c
 ic req.c
