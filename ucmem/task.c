@@ -72,9 +72,11 @@ static void check_root(TASK *task)
 {
     // device disconnected?
     if ((usbh[REG_STAT] & STAT_DETECT) == 0) {
-        task = clr_task(task);
+        printf("device disconnected, task addr = %d\n", task->addr);
+        clr_task(task);
         root_config(1, 0);
         task->prt_flags = ROOT_PORT|PRT_POWER;
+        return;
     }
     
     // connected and nothing to do?
