@@ -181,6 +181,7 @@ void drv_hub(TASK *task, uint8_t *data)
 //
 void free_hub_tasks(TASK *task)
 {
+    printf("hub disconnects, free tasks\n");
     for(int i=1; i <= cnfg->nports; i++) {
         clr_task(cnfg->port[i]);
     }
