@@ -384,7 +384,7 @@ module m_lm_mc(
 
     reg [31:0] mem[0:(`D_UC_LM_SIZE/4)-1];
     initial begin
-        $readmemh("../ucmem/mem.hex", mem);
+        $readmemh("random_mem.hex", mem);
     end
 
     always@(posedge CLK) begin

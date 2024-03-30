@@ -5,7 +5,7 @@
 # cd riscv-kencc
 # ./CONFIG.sh
 # ./BUILD.sh
-# PATH=$PATH:../../riscv-kencc/host/bin/
+PATH=$PATH:../../riscv-kencc/host/bin/
 
 ia entry.s
 ic task.c
