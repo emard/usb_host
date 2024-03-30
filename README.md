@@ -1,7 +1,7 @@
 # USB HOST for FPGA
 
-This a fork of PNRU's great source
-https://gitlab.com/pnru/usb_host
+This is a fork of PNRU's great source
+[usb_hub](https://gitlab.com/pnru/usb_host).
 emard fixed hub hotplugging and wrote
 this readme.
 
