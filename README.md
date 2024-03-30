@@ -24,7 +24,7 @@ Hotplug USB hub, keyboard and mouse.
 
 # Compiling
 
-Compile the cross compiler
+Compile the cross compiler [riscv-kencc](https://gitlab.com/pnru/riscv-kencc)
 
     cd riscv-kencc
     ./CONFIG.sh
