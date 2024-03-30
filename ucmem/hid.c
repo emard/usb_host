@@ -46,6 +46,8 @@ void drv_hid(TASK *task, uint8_t *config)
                 break;
             config = (uint8_t *)iface + iface->bLength;
 
+            if(1)
+            {
             if (iface->bInterfaceClass == 3 && iface->bInterfaceSubClass == 1) {
                 switch (iface->bInterfaceProtocol) {
                 case KBD:   task->state   = hid_keybd1;
@@ -65,6 +67,16 @@ void drv_hid(TASK *task, uint8_t *config)
                 default:    printf("HID boot device not recognised\n");
                             continue;
                 }
+            }
+            }
+            else
+            {
+                // detect any device and read it like keyboard
+                task->state   = hid_keybd1;
+                local->flags |= KBD;
+                ept = find_desc(config, EPT_ID);
+                local->kbd_ep  = ept->bEndpointAddress & 0x0f;
+                printf("device detected (%d)\n", local->kbd_ep);
             }
         }
         if (local->flags == 0) {
