@@ -1,5 +1,10 @@
 # USB HOST for FPGA
 
+This a fork of PNRU's great source
+https://gitlab.com/pnru/usb_host
+emard fixed hub hotplugging and wrote
+this readme.
+
 Supports hotplugging of the USB hub, keyboard and mouse.
 
 Contains small RISC-V softcore using 16K BRAM.
