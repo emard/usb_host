@@ -7,6 +7,7 @@ module top
    input wire clk_25mhz,        // 25MHz clock
 
    output wire [27:0] gp,       // test vector
+   input  wire [6:0] btn,       // btn[1] is reset
    output wire [7:0] led,
    
    input  wire usb_fpga_dp,     // D differential in
@@ -43,7 +44,7 @@ module top
       if (~lock) begin
          rstn_sync <= 'd0;
       end else begin
-         rstn_sync <= {1'b1, rstn_sync[6:1]};
+         rstn_sync <= {~btn[1], rstn_sync[6:1]};
       end
    end
   
