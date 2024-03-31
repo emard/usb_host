@@ -15,4 +15,4 @@ ecpbram --verbose --generate random_mem.hex --seed 0 --width 32 --depth 4096
 ecpbram --verbose --input sys_empty.cfg --from random_mem.hex --to ../ucmem/mem.hex --output sys.cfg
 ecppack --compress sys.cfg sys.bit
 
-# fujprog -tb1M sys.bit
+echo fujprog -tb1M sys.bit
