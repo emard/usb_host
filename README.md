@@ -2,8 +2,8 @@
 
 This is a fork of PNRU's great source
 [usb_host](https://gitlab.com/pnru/usb_host).
-emard fixed hub hotplugging and wrote
-this readme.
+emard wrote this readme and added soc/fw.sh script that
+quickly replaces firmware in already compiled bitstream.
 
 Supports hotplugging of the USB hub, keyboard and mouse.
 
@@ -30,15 +30,15 @@ Compile the cross compiler [riscv-kencc](https://gitlab.com/pnru/riscv-kencc)
     ./CONFIG.sh
     ./BUILD.sh
 
-Compile the firmware (edit make.sh)
-
-    cd usb_host/ucmem
-    ./make.sh
-
 Compile the bitstream (edit build.sh)
 
     cd usb_host/soc
     ./build.sh
+
+Compile the firmware (edit make.sh) and replace it in the bitstream
+
+    cd usb_host/soc
+    ./fw.sh
 
 Upload to ULX3S board and print messages
 
